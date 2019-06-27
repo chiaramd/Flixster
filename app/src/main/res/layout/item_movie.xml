@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="5dp"
     android:layout_width="match_parent" android:layout_height="wrap_content">
 
@@ -8,28 +9,43 @@
         android:id="@+id/ivPosterImage"
         android:layout_width="90dp"
         android:layout_height="135dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:contentDescription="@string/movie_poster"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:color/holo_blue_dark" />
 
     <TextView
         android:id="@+id/tvTitle"
-        android:layout_width="323dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginLeft="6dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_toEndOf="@+id/ivPosterImage"
         android:layout_toRightOf="@+id/ivPosterImage"
         android:text="@string/movie_title"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivPosterImage"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvOverview"
-        android:layout_width="320dp"
-        android:layout_height="93dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/tvTitle"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_toRightOf="@+id/ivPosterImage"
-        android:text="@string/movie_overview_and_synopsis" />
-</RelativeLayout>
+        android:text="@string/movie_overview_and_synopsis"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toEndOf="@+id/ivPosterImage"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+</androidx.constraintlayout.widget.ConstraintLayout>
