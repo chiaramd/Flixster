@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     Config config;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     //get configuration from the API
     private void getConfiguration() {

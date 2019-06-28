@@ -1,6 +1,7 @@
 package com.example.flixster;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.flixster.models.Config;
 import com.example.flixster.models.Movie;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -87,7 +90,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     //create viewholder as a static inner class
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    //can't be static!!
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         //track view objects
         ImageView ivPosterImage;
@@ -95,6 +99,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         TextView tvTitle;
         TextView tvOverview;
 
+        //delete @NonNull????
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             //lookup view objects by id
@@ -103,6 +108,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             ivPosterImage = (ImageView) itemView.findViewById(R.id.ivPosterImage);
             ivBackdropImage = (ImageView) itemView.findViewById(R.id.ivBackdropImage);
 
+            itemView.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                Movie movie = movies.get(position);
+                Intent intent = new Intent(context, MovieDetailsActivity.class);
+                intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
+                intent.putExtra("backdropUrl", config.getImageUrl(config.getBackdropSize(), movie.getBackdropPath()));
+                context.startActivity(intent);
+            }
         }
     }
 }
