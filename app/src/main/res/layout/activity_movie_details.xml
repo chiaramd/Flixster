@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MovieDetailsActivity">
+    tools:context=".MovieDetailsActivity"
+    android:background="@color/black">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,6 +22,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:text="@string/movie_title"
+            android:textColor="@color/white"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toStartOf="@+id/rbVoteAverage"
             app:layout_constraintHorizontal_bias="0.0"
@@ -51,7 +53,8 @@
             android:text="@string/movie_overview_and_synopsis"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            android:textColor="@color/white"/>
 
         <TextView
             android:id="@+id/tvVoteCount"
@@ -62,7 +65,8 @@
             android:layout_marginRight="8dp"
             android:text="@string/votes"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/white"/>
 
         <ImageView
             android:id="@+id/ivDetailPoster"
@@ -101,6 +105,7 @@
             android:layout_marginRight="8dp"
             android:text="@string/runtime"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvOverview" />
+            app:layout_constraintTop_toBottomOf="@+id/tvOverview"
+            android:textColor="@color/white"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
