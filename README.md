@@ -40,9 +40,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
 
-The additional API calls and video player functionality didn't work on my virtual device, so the GIF doesn't show these features.
 
 ## Open-source libraries used
 
