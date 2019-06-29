@@ -99,7 +99,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         TextView tvTitle;
         TextView tvOverview;
 
-        //delete @NonNull????
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             //lookup view objects by id
@@ -109,7 +108,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
             ivBackdropImage = (ImageView) itemView.findViewById(R.id.ivBackdropImage);
 
             itemView.setOnClickListener(this);
-
         }
 
         @Override

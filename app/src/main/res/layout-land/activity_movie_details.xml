@@ -16,30 +16,30 @@
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="120dp"
+            android:layout_marginLeft="120dp"
+            android:layout_marginTop="300dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:gravity="center"
             android:text="@string/movie_title"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toStartOf="@+id/rbVoteAverage"
-            app:layout_constraintStart_toStartOf="@+id/player"
-            app:layout_constraintTop_toBottomOf="@+id/player" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RatingBar
             android:id="@+id/rbVoteAverage"
             style="@style/Widget.AppCompat.RatingBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="304dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:numStars="5"
             android:stepSize="0.5"
             app:layout_constraintEnd_toStartOf="@+id/tvRuntime"
-            app:layout_constraintTop_toBottomOf="@+id/player" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvVoteCount"
@@ -54,29 +54,30 @@
             android:id="@+id/tvOverview"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="-16dp"
-            android:layout_marginLeft="-16dp"
+            android:layout_marginStart="120dp"
+            android:layout_marginLeft="120dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="-16dp"
-            android:layout_marginRight="-16dp"
+            android:layout_marginEnd="120dp"
+            android:layout_marginRight="120dp"
             android:layout_marginBottom="8dp"
             android:text="@string/movie_overview_and_synopsis"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/player"
-            app:layout_constraintStart_toStartOf="@+id/player"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
         <ImageView
             android:id="@+id/ivDetailPoster"
-            android:layout_width="400dp"
-            android:layout_height="225dp"
+            android:layout_width="500dp"
+            android:layout_height="281dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:contentDescription="@string/movie_poster"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/flicks_backdrop_placeholder" />
@@ -99,10 +100,12 @@
             android:id="@+id/tvRuntime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="304dp"
+            android:layout_marginEnd="120dp"
+            android:layout_marginRight="120dp"
             android:text="@string/runtime"
-            app:layout_constraintEnd_toEndOf="@+id/player"
-            app:layout_constraintTop_toBottomOf="@+id/player" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

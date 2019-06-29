@@ -33,30 +33,19 @@ public class MovieDetailsActivity extends YouTubeBaseActivity {
 
     Movie movie;
 
-    /*
-    @BindView(R.id.tvTitle) TextView tvTitle;
-    @BindView(R.id.tvOverview) TextView tvOverview;
-    @BindView(R.id.rbVoteAverage) RatingBar rbVoteAverage;
-    @BindView(R.id.tvVoteCount) TextView tvVoteCount;
-    */
     TextView tvTitle;
     TextView tvOverview;
     RatingBar rbVoteAverage;
     TextView tvVoteCount;
     ImageView imageView;
+    TextView tvRuntime;
     YouTubePlayerView playerView;
 
     AsyncHttpClient client;
 
     String videoId;
     String youtubeId;
-
     String backdropUrl;
-
-    TextView tvRuntime;
-
-    Integer pageNumber;
-
 
 
     @Override
@@ -64,12 +53,8 @@ public class MovieDetailsActivity extends YouTubeBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-
-
         Intent intent = getIntent();
         backdropUrl = intent.getStringExtra("backdropUrl");
-
-        //ButterKnife.bind(this);
 
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvOverview = (TextView) findViewById(R.id.tvOverview);
@@ -79,7 +64,6 @@ public class MovieDetailsActivity extends YouTubeBaseActivity {
 
 
         movie = (Movie) Parcels.unwrap(getIntent().getParcelableExtra(Movie.class.getSimpleName()));
-        Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", movie.getTitle()));
 
         tvTitle.setText(movie.getTitle());
         tvOverview.setText(movie.getOverview());
@@ -90,27 +74,14 @@ public class MovieDetailsActivity extends YouTubeBaseActivity {
         int voteCount = movie.getVoteCount().intValue();
         tvVoteCount.setText(Integer.toString(voteCount) + " votes");
 
+        playerView = (YouTubePlayerView) findViewById(R.id.player);
+
         client = new AsyncHttpClient();
-//        Intent intent = getIntent();
-//        videoId = intent.getStringExtra("id");
-
-
-
 
         videoId = Integer.toString(movie.getId());
 
         getRuntime();
-
-
-//        imageView = findViewById(R.id.ivDetailPoster);
-//
-//        Glide.with(this)
-//                .load(backdropUrl)
-//                .bitmapTransform(new RoundedCornersTransformation(this, 25, 0))
-//                .placeholder(R.drawable.flicks_backdrop_placeholder)
-//                .error(R.drawable.flicks_backdrop_placeholder)
-//                .into(imageView);
-
+        getVideo();
     }
 
     private void getRuntime() {
@@ -122,69 +93,35 @@ public class MovieDetailsActivity extends YouTubeBaseActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 //super.onSuccess(statusCode, headers, response);
                 try {
-
                     Integer runtime = response.getInt("runtime");
                     String runtimeText = Integer.toString(runtime) + " minutes";
                     tvRuntime.setText(runtimeText);
-
-                    Log.d("MovieDetailsActivity", "Received runtime results from API");
                 } catch (JSONException except) {
-
                     Log.d("MovieDetailsActivity", "Failed to parse movie videos");
-                    finish();
+                    setPoster();
                 }
             }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
-//            }
         });
-        getVideo();
     }
 
 
     private void loadVideo() {
-
-        playerView = (YouTubePlayerView) findViewById(R.id.player);
         playerView.setVisibility(View.VISIBLE);
-//        imageView.setVisibility(View.GONE);
-
-        Log.d("MovieDetailsActivity", "About to initialize player view");
         playerView.initialize(getString(R.string.youtube_api_key), new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 if (youtubeId != null) {
-                    Log.d("MovieDetailsActivity", youtubeId);
                     youTubePlayer.cueVideo(youtubeId);
                 } else {
                     Log.e("MovieDetailsActivity", "Error loading Youtube video");
-                    playerView.setVisibility(View.GONE);
-                    imageView = findViewById(R.id.ivDetailPoster);
-
-                    imageView.setVisibility(View.VISIBLE);
-                    Glide.with(MovieDetailsActivity.this)
-                            .load(backdropUrl)
-                            .bitmapTransform(new RoundedCornersTransformation(MovieDetailsActivity.this, 25, 0))
-                            .placeholder(R.drawable.flicks_backdrop_placeholder)
-                            .error(R.drawable.flicks_backdrop_placeholder)
-                            .into(imageView);
+                    setPoster();
                 }
             }
 
             @Override
             public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
                 Log.e("MovieDetailsActivity", "Error initializing YouTube player");
-                playerView.setVisibility(View.GONE);
-                imageView = findViewById(R.id.ivDetailPoster);
-
-                imageView.setVisibility(View.VISIBLE);
-                Glide.with(MovieDetailsActivity.this)
-                .load(backdropUrl)
-                .bitmapTransform(new RoundedCornersTransformation(MovieDetailsActivity.this, 25, 0))
-                .placeholder(R.drawable.flicks_backdrop_placeholder)
-                .error(R.drawable.flicks_backdrop_placeholder)
-                .into(imageView);
-
+                setPoster();
             }
         });
     }
@@ -197,23 +134,32 @@ public class MovieDetailsActivity extends YouTubeBaseActivity {
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //super.onSuccess(statusCode, headers, response);
                 try {
                     JSONArray results = response.getJSONArray("results");
-                    Log.d("MovieDetailsActivity", "Received results from API");
                     youtubeId = results.getJSONObject(0).getString("key");
                     loadVideo();
                 } catch (JSONException except) {
-
                     Log.d("MovieDetailsActivity", "Failed to parse movie videos");
-                    finish();
+                    setPoster();
                 }
             }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
-//            }
         });
 
     }
+
+    private void setPoster() {
+        if (playerView != null) {
+            playerView.setVisibility(View.GONE);
+        }
+        imageView = findViewById(R.id.ivDetailPoster);
+
+        imageView.setVisibility(View.VISIBLE);
+        Glide.with(MovieDetailsActivity.this)
+                .load(backdropUrl)
+                .bitmapTransform(new RoundedCornersTransformation(MovieDetailsActivity.this, 25, 0))
+                .placeholder(R.drawable.flicks_backdrop_placeholder)
+                .error(R.drawable.flicks_backdrop_placeholder)
+                .into(imageView);
+    }
 }
+

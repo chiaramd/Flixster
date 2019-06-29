@@ -33,17 +33,20 @@ public class MainActivity extends AppCompatActivity {
 
     //INSTANCE FIELDS
     AsyncHttpClient client;
-
     ArrayList<Movie> movies;
     RecyclerView rvMovies;
     MovieAdapter adapter;
     Config config;
 
+    //variable to increment each time view scrolls to bottom
+    Integer pagenumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        pagenumber = 1;
 
         //init the client
         client = new AsyncHttpClient();
@@ -55,7 +58,16 @@ public class MainActivity extends AppCompatActivity {
         rvMovies = (RecyclerView) findViewById(R.id.rvMovies);
         rvMovies.setLayoutManager(new LinearLayoutManager(this));
         rvMovies.setAdapter(adapter);
-
+        //loads new page of movies each time recycler view scrolls to bottom
+        rvMovies.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (!recyclerView.canScrollVertically(1)) {
+                    ++pagenumber;
+                    getNowPlaying();
+                }
+            }
+        });
         //get the configuration on app creation
         getConfiguration();
 
@@ -66,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         String url = API_BASE_URL + "/movie/now_playing";
         RequestParams params = new RequestParams();
         params.put(API_KEY_PARAM, getString(R.string.api_key));
+        params.put("page", pagenumber);
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -82,9 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, String.format("Loaded %s movies", results.length()));
                 } catch (JSONException e) {
                     logError("Failed to parse now playing movies", e, true);
-
                 }
-
             }
 
             @Override
@@ -106,19 +117,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-
                     config = new Config(response);
-                    Log.i(TAG, String.format("Loaded configuration with imageBaseUrl %s and posterSize %s", config.getImageBaseUrl(), config.getPosterSize()));
                     adapter.setConfig(config);
                     //get the now playing list
                     getNowPlaying();
-
                 } catch (JSONException e) {
                     logError("Failed parsing configuration", e, true);
                 }
-
-
-
             }
 
             @Override
@@ -137,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
         }
     }
-
 }
 
 
