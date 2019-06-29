@@ -4,4 +4,5 @@
     <string name="movie_title">Movie Title</string>
     <string name="movie_poster">Movie Poster</string>
     <string name="votes">0votes</string>
+    <string name="runtime">0 minutes</string>
 </resources>

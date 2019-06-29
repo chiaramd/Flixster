@@ -8,17 +8,28 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
 import com.example.flixster.models.Movie;
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import cz.msebera.android.httpclient.Header;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+import static com.example.flixster.MainActivity.API_BASE_URL;
+import static com.example.flixster.MainActivity.API_KEY_PARAM;
+
+public class MovieDetailsActivity extends YouTubeBaseActivity {
 
     Movie movie;
 
@@ -32,16 +43,20 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TextView tvOverview;
     RatingBar rbVoteAverage;
     TextView tvVoteCount;
+    ImageView imageView;
+    YouTubePlayerView playerView;
 
     AsyncHttpClient client;
 
-
-    //Config config;
-
-    //public void setConfig(Config config) {this.config = config;}
-
+    String videoId;
+    String youtubeId;
 
     String backdropUrl;
+
+    TextView tvRuntime;
+
+    Integer pageNumber;
+
 
 
     @Override
@@ -49,21 +64,18 @@ public class MovieDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-       // config = new Config(movie);
 
-//Intent intent = getIntent();
-//
-//        videoId = intent.getStringExtra("id");
-//
+
         Intent intent = getIntent();
+        backdropUrl = intent.getStringExtra("backdropUrl");
 
         //ButterKnife.bind(this);
-        backdropUrl = intent.getStringExtra("backdropUrl");
 
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvOverview = (TextView) findViewById(R.id.tvOverview);
         rbVoteAverage = (RatingBar) findViewById(R.id.rbVoteAverage);
         tvVoteCount = (TextView) findViewById(R.id.tvVoteCount);
+        tvRuntime = (TextView) findViewById(R.id.tvRuntime);
 
 
         movie = (Movie) Parcels.unwrap(getIntent().getParcelableExtra(Movie.class.getSimpleName()));
@@ -78,72 +90,130 @@ public class MovieDetailsActivity extends AppCompatActivity {
         int voteCount = movie.getVoteCount().intValue();
         tvVoteCount.setText(Integer.toString(voteCount) + " votes");
 
+        client = new AsyncHttpClient();
+//        Intent intent = getIntent();
+//        videoId = intent.getStringExtra("id");
 
 
-        ImageView imageView = findViewById(R.id.ivDetailPoster);
 
-        Glide.with(this)
+
+        videoId = Integer.toString(movie.getId());
+
+        getRuntime();
+
+
+//        imageView = findViewById(R.id.ivDetailPoster);
+//
+//        Glide.with(this)
+//                .load(backdropUrl)
+//                .bitmapTransform(new RoundedCornersTransformation(this, 25, 0))
+//                .placeholder(R.drawable.flicks_backdrop_placeholder)
+//                .error(R.drawable.flicks_backdrop_placeholder)
+//                .into(imageView);
+
+    }
+
+    private void getRuntime() {
+        String url = API_BASE_URL + "/movie/" + videoId;
+        RequestParams params = new RequestParams();
+        params.put(API_KEY_PARAM, getString(R.string.api_key));
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                //super.onSuccess(statusCode, headers, response);
+                try {
+
+                    Integer runtime = response.getInt("runtime");
+                    String runtimeText = Integer.toString(runtime) + " minutes";
+                    tvRuntime.setText(runtimeText);
+
+                    Log.d("MovieDetailsActivity", "Received runtime results from API");
+                } catch (JSONException except) {
+
+                    Log.d("MovieDetailsActivity", "Failed to parse movie videos");
+                    finish();
+                }
+            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+//            }
+        });
+        getVideo();
+    }
+
+
+    private void loadVideo() {
+
+        playerView = (YouTubePlayerView) findViewById(R.id.player);
+        playerView.setVisibility(View.VISIBLE);
+//        imageView.setVisibility(View.GONE);
+
+        Log.d("MovieDetailsActivity", "About to initialize player view");
+        playerView.initialize(getString(R.string.youtube_api_key), new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                if (youtubeId != null) {
+                    Log.d("MovieDetailsActivity", youtubeId);
+                    youTubePlayer.cueVideo(youtubeId);
+                } else {
+                    Log.e("MovieDetailsActivity", "Error loading Youtube video");
+                    playerView.setVisibility(View.GONE);
+                    imageView = findViewById(R.id.ivDetailPoster);
+
+                    imageView.setVisibility(View.VISIBLE);
+                    Glide.with(MovieDetailsActivity.this)
+                            .load(backdropUrl)
+                            .bitmapTransform(new RoundedCornersTransformation(MovieDetailsActivity.this, 25, 0))
+                            .placeholder(R.drawable.flicks_backdrop_placeholder)
+                            .error(R.drawable.flicks_backdrop_placeholder)
+                            .into(imageView);
+                }
+            }
+
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                Log.e("MovieDetailsActivity", "Error initializing YouTube player");
+                playerView.setVisibility(View.GONE);
+                imageView = findViewById(R.id.ivDetailPoster);
+
+                imageView.setVisibility(View.VISIBLE);
+                Glide.with(MovieDetailsActivity.this)
                 .load(backdropUrl)
-                .bitmapTransform(new RoundedCornersTransformation(this, 25, 0))
+                .bitmapTransform(new RoundedCornersTransformation(MovieDetailsActivity.this, 25, 0))
                 .placeholder(R.drawable.flicks_backdrop_placeholder)
                 .error(R.drawable.flicks_backdrop_placeholder)
                 .into(imageView);
 
-
-    }
-
-
-
-
-
-    public void onClick(View v) {
-
-
-        //getVideoId();
-
-
-
-
-
-        String videoId = Integer.toString(movie.getId());
-
-        //video id as a string extra
-        Intent intent = new Intent(this, MovieTrailerActivity.class);
-        intent.putExtra("id", videoId);
-        this.startActivity(intent);
-    }
-    /*
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        //track view objects
-        ImageView ivPosterImage;
-        ImageView ivBackdropImage;
-        TextView tvTitle;
-        TextView tvOverview;
-
-        //delete @NonNull????
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            //lookup view objects by id
-            tvOverview = (TextView) itemView.findViewById(R.id.tvOverview);
-            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
-            ivPosterImage = (ImageView) itemView.findViewById(R.id.ivPosterImage);
-            ivBackdropImage = (ImageView) itemView.findViewById(R.id.ivBackdropImage);
-
-            itemView.setOnClickListener(this);
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                Movie movie = movies.get(position);
-                Intent intent = new Intent(context, MovieDetailsActivity.class);
-                intent.putExtra(Movie.class.getSimpleName(), Parcels.wrap(movie));
-                context.startActivity(intent);
             }
-        }
-    }*/
+        });
+    }
 
+
+    private void getVideo() {
+        String url = API_BASE_URL + "/movie/" + videoId + "/videos";
+        RequestParams params = new RequestParams();
+        params.put(API_KEY_PARAM, getString(R.string.api_key));
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                //super.onSuccess(statusCode, headers, response);
+                try {
+                    JSONArray results = response.getJSONArray("results");
+                    Log.d("MovieDetailsActivity", "Received results from API");
+                    youtubeId = results.getJSONObject(0).getString("key");
+                    loadVideo();
+                } catch (JSONException except) {
+
+                    Log.d("MovieDetailsActivity", "Failed to parse movie videos");
+                    finish();
+                }
+            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+//            }
+        });
+
+    }
 }
